@@ -3,313 +3,329 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Внутренний сайт агентства «Смысл»</title>
+  <title>Релакс Плейграунд — Агентство «Смысл»</title>
+  <!-- Подключаем стили и шрифты -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --background: #f5f5f5;
-      --text-color: #1a1a2e;
-      --accent: #e43f5a;
-      --card: #ffffff;
-      --shadow: rgba(0, 0, 0, 0.1);
-      --font: 'Inter', sans-serif;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: var(--font);
-      background: var(--background);
-      color: var(--text-color);
-      overflow-x: hidden;
-    }
-    header {
-      background: var(--text-color);
-      color: var(--background);
-      padding: 1rem 2rem;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    nav ul {
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 0.5rem;
-    }
-    nav a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 600;
-      transition: color .3s;
-    }
-    nav a:hover { color: var(--background); }
-    main { padding: 2rem; }
-    section { margin-bottom: 4rem; }
-    section h2 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      position: relative;
-      display: inline-block;
-    }
-    section h2::after {
-      content: '';
-      display: block;
-      width: 50px;
-      height: 4px;
-      background: var(--accent);
-      margin-top: 0.3rem;
-      border-radius: 2px;
-    }
-    .game-container {
-      background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px var(--shadow);
-      padding: 2rem;
-      min-height: 300px;
-      position: relative;
-    }
-    /* Memory Game */
-    .memory-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-    .card {
-      background: var(--accent);
-      color: var(--background);
-      font-size: 1.2rem;
-      font-weight: bold;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 80px;
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      transition: transform .3s;
-    }
-    .card.flipped { transform: rotateY(180deg); background: var(--card); color: var(--text-color); }
-    /* SEO Puzzle */
-    .puzzle-container { display: flex; gap: 2rem; }
-    .terms, .defs { flex: 1; display: flex; flex-wrap: wrap; gap: 1rem; }
-    .item { background: var(--card); padding: .8rem 1rem; border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); cursor: grab; }
-    /* Timeline */
-    .timeline-list { list-style: none; padding: 0; }
-    .timeline-list li { background: var(--card); margin-bottom: .8rem; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); cursor: move; }
-    /* Campaign Builder */
-    .builder { display: flex; gap: 2rem; }
-    .steps, .dropzone { flex: 1; background: var(--card); padding: 1rem; border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); min-height: 200px; }
-    .steps .step { margin: .5rem 0; padding: .6rem; border: 1px dashed var(--accent); border-radius: 4px; cursor: grab; }
-    .dropzone.highlight { border-color: var(--text-color); }
-    /* Design Quiz */
-    .quiz-question { margin-bottom: 1rem; font-size: 1.1rem; }
-    .quiz-options { list-style: none; padding: 0; }
-    .quiz-options li { background: var(--card); margin-bottom: .8rem; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); cursor: pointer; transition: background .3s; }
-    .quiz-options li.correct { background: #d4edda; }
-    .quiz-options li.wrong { background: #f8d7da; }
-    /* Animations */
-    [data-animate] { opacity: 0; transform: translateY(20px); animation: fadeInUp .6s forwards; }
-    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    /* Reset и базовые стили */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body { font-family: 'Inter', sans-serif; background: #0d1926; color: #fff; }
+    button { background: none; border: none; cursor: pointer; }
+
+    /* Меню выбора игр */
+    #menu { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: 80%; max-width: 1000px; }
+    .game-btn { background: rgba(255,255,255,0.1); border: 2px solid #3fa9f5;
+      border-radius: 16px; padding: 20px; text-align: center; transition: all 0.3s ease;
+      display: flex; align-items: center; justify-content: center; height: 200px; }
+    .game-btn:hover { background: rgba(63,169,245,0.2); transform: scale(1.05); }
+    .game-btn span { font-size: 1.2rem; font-weight: 600; }
+
+    /* Контейнер игры */
+    #game-container, canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; }
+    #controls { position: absolute; top: 20px; left: 20px; z-index: 10; }
+    #backBtn { padding: 10px 20px; background: #3fa9f5; color: #0d1926; border-radius: 8px; font-weight: 600; transition: background 0.3s ease; }
+    #backBtn:hover { background: #61c1ff; }
+
+    /* Стиль HUD для игр */
+    .hud { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.3);
+      padding: 10px 15px; border-radius: 8px; font-size: 1rem; }
+
+    /* Общие анимации */
+    .fade-in { animation: fadeIn 0.8s ease forwards; opacity: 0; }
+    .slide-up { animation: slideUp 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
-  <header>
-    <h1 data-animate>Агентство «Смысл» — Игровая площадка</h1>
-    <nav data-animate>
-      <ul>
-        <li><a href="#memory">Логотип Мемо</a></li>
-        <li><a href="#seo">SEO-Пазл</a></li>
-        <li><a href="#timeline">Временная Линия</a></li>
-        <li><a href="#campaign">Сбор Кампаний</a></li>
-        <li><a href="#quiz">Дизайн-Квиз</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main>
-    <!-- Memory Game -->
-    <section id="memory" data-animate>
-      <h2>1. Логотип Мемо</h2>
-      <div class="game-container">
-        <div class="memory-grid" id="memoryGrid"></div>
-      </div>
-    </section>
-    <!-- SEO Puzzle -->
-    <section id="seo" data-animate>
-      <h2>2. SEO-Пазл</h2>
-      <div class="game-container puzzle-container">
-        <div class="terms" id="termsContainer"></div>
-        <div class="defs" id="defsContainer"></div>
-      </div>
-    </section>
-    <!-- Timeline -->
-    <section id="timeline" data-animate>
-      <h2>3. Временная Линия</h2>
-      <div class="game-container">
-        <ul class="timeline-list" id="timelineList"></ul>
-      </div>
-    </section>
-    <!-- Campaign Builder -->
-    <section id="campaign" data-animate>
-      <h2>4. Сбор Кампаний</h2>
-      <div class="game-container builder">
-        <div class="steps" id="stepPool"></div>
-        <div class="dropzone" id="campaignZone">Перетащите шаги сюда в нужном порядке</div>
-      </div>
-    </section>
-    <!-- Design Quiz -->
-    <section id="quiz" data-animate>
-      <h2>5. Дизайн-Квиз</h2>
-      <div class="game-container">
-        <div id="quizContainer"></div>
-      </div>
-    </section>
-  </main>
-  <footer data-animate style="text-align:center; padding:1rem 0;">© 2025 «Смысл»</footer>
+  <!-- Главное меню выбора игр -->
+  <div id="menu">
+    <div class="game-btn fade-in" data-game="bubbles"><span>Bubble Pop</span></div>
+    <div class="game-btn fade-in" data-game="fishpond"><span>Fish Pond</span></div>
+    <div class="game-btn fade-in" data-game="zengarden"><span>Zen Garden</span></div>
+    <div class="game-btn fade-in" data-game="starfield"><span>Starfield</span></div>
+    <div class="game-btn fade-in" data-game="colorflow"><span>Color Flow</span></div>
+  </div>
+
+  <!-- Контейнер для запуска игр -->
+  <div id="game-container">
+    <div id="controls" class="slide-up">
+      <button id="backBtn">← Меню</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="hud" class="hud"></div>
+  </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('[data-animate]').forEach((el, i) => {
-        el.style.animationDelay = `${i * 0.2}s`;
-      });
-      initLogoMemory();
-      initSEOPuzzle();
-      initTimeline();
-      initCampaignBuilder();
-      initDesignQuiz();
-    });
+  // === Инициализация ===
+  const menu = document.getElementById('menu');
+  const gameContainer = document.getElementById('game-container');
+  const canvas = document.getElementById('gameCanvas');
+  const hud = document.getElementById('hud');
+  const backBtn = document.getElementById('backBtn');
+  const ctx = canvas.getContext('2d');
+  let currentGame = null;
 
-    // 1. Memory Game
-    function initLogoMemory() {
-      const items = ['Клиент A','Клиент B','Клиент C','Клиент D'];
-      const cards = [...items, ...items].map(content => ({id: Math.random(), content}));
-      const grid = document.getElementById('memoryGrid');
-      cards.sort(() => 0.5 - Math.random());
-      let first=null, second=null, lock=false;
-      cards.forEach(card => {
-        const el = document.createElement('div'); el.className='card'; el.textContent='?';
-        el.addEventListener('click', () => {
-          if(lock||el===first) return;
-          el.classList.add('flipped'); el.textContent=card.content;
-          if(!first) { first=el; return; }
-          second=el; lock=true;
-          setTimeout(() => {
-            if(first.textContent===second.textContent) {
-              first.style.visibility=second.style.visibility='hidden';
-            } else {
-              first.classList.remove('flipped'); second.classList.remove('flipped');
-              first.textContent=second.textContent='?';
-            }
-            first=second=null; lock=false;
-          }, 1000);
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // Запуск выбранной игры
+  menu.addEventListener('click', (e) => {
+    const btn = e.target.closest('.game-btn');
+    if (!btn) return;
+    const game = btn.dataset.game;
+    startGame(game);
+  });
+
+  // Возврат в меню
+  backBtn.addEventListener('click', () => {
+    if (currentGame && currentGame.stop) currentGame.stop();
+    currentGame = null;
+    gameContainer.style.display = 'none';
+    canvas.style.display = 'none';
+    hud.style.display = 'none';
+    menu.style.display = 'grid';
+  });
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function startGame(name) {
+    menu.style.display = 'none';
+    gameContainer.style.display = 'block';
+    canvas.style.display = 'block';
+    hud.style.display = 'block';
+    hud.textContent = '';
+    switch(name) {
+      case 'bubbles': currentGame = BubblePop(); break;
+      case 'fishpond': currentGame = FishPond(); break;
+      case 'zengarden': currentGame = ZenGarden(); break;
+      case 'starfield': currentGame = Starfield(); break;
+      case 'colorflow': currentGame = ColorFlow(); break;
+    }
+  }
+
+  // === Bubble Pop ===
+  function BubblePop() {
+    const bubbles = [];
+    const maxBubbles = 30;
+    let animationId;
+
+    function createBubble() {
+      if (bubbles.length < maxBubbles) {
+        bubbles.push({
+          x: Math.random() * canvas.width,
+          y: canvas.height + 50,
+          r: 20 + Math.random() * 30,
+          vy: 1 + Math.random() * 2
         });
-        grid.append(el);
-      });
+      }
     }
 
-    // 2. SEO Puzzle
-    function initSEOPuzzle() {
-      const pairs = [
-        {term:'Ключевое слово', def:'Слово или фраза для поиска'},
-        {term:'Метатег', def:'HTML-тег для описания страницы'},
-        {term:'Бэклинк', def:'Входящая ссылка на сайт'}
-      ];
-      const termsC = document.getElementById('termsContainer');
-      const defsC = document.getElementById('defsContainer');
-      pairs.sort(() => 0.5 - Math.random()).forEach(p => {
-        const term = document.createElement('div'); term.className='item'; term.draggable=true; term.textContent=p.term;
-        term.dataset.match = p.term; termsC.append(term);
-        const def = document.createElement('div'); def.className='item'; def.draggable=true; def.textContent=p.def;
-        def.dataset.match = p.term; defsC.append(def);
+    function drawBubbles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      bubbles.forEach((b, i) => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        b.y -= b.vy;
+        if (b.y < -b.r) bubbles.splice(i, 1);
       });
-      let dragged;
-      document.querySelectorAll('.item').forEach(item => {
-        item.addEventListener('dragstart', e => { dragged=e.target; });
-        item.addEventListener('dragover', e => e.preventDefault());
-        item.addEventListener('drop', e => {
-          if(e.target.dataset.match===dragged.dataset.match && e.target!==dragged) {
-            e.target.classList.add('correct'); dragged.classList.add('correct');
-            e.target.draggable=dragged.draggable=false;
-          }
-        });
-      });
+      hud.textContent = `Bubbles: ${bubbles.length}`;
     }
 
-    // 3. Timeline
-    function initTimeline() {
-      const events = [
-        {year:2018, text:'Основание агентства'},
-        {year:2019, text:'Первый крупный клиент'},
-        {year:2021, text:'Внедрение AI-систем'},
-        {year:2024, text:'Выход на международный рынок'}
-      ];
-      const list = document.getElementById('timelineList');
-      events.sort(() => 0.5 - Math.random()).forEach(evt => {
-        const li = document.createElement('li'); li.draggable=true;
-        li.textContent = `${evt.year} — ${evt.text}`;
-        list.append(li);
-      });
-      let dragEl;
-      list.addEventListener('dragstart', e=> dragEl=e.target);
-      list.addEventListener('dragover', e=> { e.preventDefault(); });
-      list.addEventListener('drop', e=> {
-        if(e.target.tagName==='LI') {
-          list.insertBefore(dragEl, e.target.nextSibling);
+    function loop() {
+      createBubble();
+      drawBubbles();
+      animationId = requestAnimationFrame(loop);
+    }
+
+    // Лопание пузырей кликом
+    canvas.addEventListener('click', popBubble);
+    function popBubble(e) {
+      bubbles.forEach((b, i) => {
+        const dist = Math.hypot(e.clientX - b.x, e.clientY - b.y);
+        if (dist < b.r) {
+          bubbles.splice(i, 1);
         }
       });
     }
 
-    // 4. Campaign Builder
-    function initCampaignBuilder() {
-      const steps = ['Исследование','Стратегия','Креатив','Запуск','Анализ'];
-      const pool = document.getElementById('stepPool');
-      const zone = document.getElementById('campaignZone');
-      steps.forEach(s => {
-        const div = document.createElement('div'); div.className='step'; div.textContent=s; div.draggable=true;
-        pool.append(div);
-      });
-      let dragged;
-      document.querySelectorAll('.step').forEach(st => {
-        st.addEventListener('dragstart', e=> dragged=e.target);
-      });
-      zone.addEventListener('dragover', e=> e.preventDefault());
-      zone.addEventListener('drop', e=> {
-        e.preventDefault(); zone.append(dragged.cloneNode(true));
+    loop();
+
+    return {
+      stop() {
+        cancelAnimationFrame(animationId);
+        canvas.removeEventListener('click', popBubble);
+      }
+    };
+  }
+
+  // === Fish Pond ===
+  function FishPond() {
+    const fishCount = 20;
+    const fish = [];
+    let animationId;
+
+    for (let i = 0; i < fishCount; i++) {
+      fish.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        angle: Math.random() * Math.PI * 2,
       });
     }
 
-    // 5. Design Quiz
-    function initDesignQuiz() {
-      const container = document.getElementById('quizContainer');
-      const questions = [
-        {q:'Что такое контраст в дизайне?',
-         options:['Разница между элементами','Расположение блоков','Шрифт','Отступы'],
-         answer:0},
-        {q:'Что означает термин «Whitespace»?',
-         options:['Пустое пространство','Белый цвет','Маска','Тень'],
-         answer:0}
-      ];
-      let idx=0;
-      function showQuestion() {
-        container.innerHTML='';
-        const {q,options,answer} = questions[idx];
-        const qEl = document.createElement('div'); qEl.className='quiz-question'; qEl.textContent=q;
-        container.append(qEl);
-        const ul = document.createElement('ul'); ul.className='quiz-options';
-        options.forEach((opt,i)=>{
-          const li = document.createElement('li'); li.textContent=opt;
-          li.addEventListener('click',()=>{
-            if(i===answer) li.classList.add('correct'); else li.classList.add('wrong');
-            setTimeout(()=>{
-              idx=(idx+1)%questions.length; showQuestion();
-            }, 1000);
-          }); ul.append(li);
-        });
-        container.append(ul);
-      }
-      showQuestion();
+    function drawFish() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fish.forEach(f => {
+        f.x += Math.cos(f.angle) * 1.5;
+        f.y += Math.sin(f.angle) * 1.5;
+        f.angle += (Math.random() - 0.5) * 0.1;
+        if (f.x > canvas.width) f.x = 0;
+        if (f.x < 0) f.x = canvas.width;
+        if (f.y > canvas.height) f.y = 0;
+        if (f.y < 0) f.y = canvas.height;
+        ctx.save();
+        ctx.translate(f.x, f.y);
+        ctx.rotate(f.angle);
+        ctx.beginPath();
+        ctx.moveTo(-15, 0);
+        ctx.lineTo(15, 0);
+        ctx.lineTo(10, 5);
+        ctx.lineTo(10, -5);
+        ctx.fillStyle = '#8ce';
+        ctx.fill();
+        ctx.restore();
+      });
+      hud.textContent = `Fish: ${fish.length}`;
     }
+
+    function loop() {
+      drawFish();
+      animationId = requestAnimationFrame(loop);
+    }
+
+    loop();
+
+    return {
+      stop() {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }
+
+  // === Zen Garden ===
+  function ZenGarden() {
+    let drawing = false;
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+
+    function startDraw() { drawing = true; }
+    function stopDraw() { drawing = false; }
+    function draw(e) {
+      if (!drawing) return;
+      const x = e.clientX;
+      const y = e.clientY;
+      const offsetX = (Math.random() - 0.5) * 10;
+      const offsetY = (Math.random() - 0.5) * 10;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + offsetX, y + offsetY);
+      ctx.stroke();
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mousemove', draw);
+    hud.textContent = 'Draw your calm lines';
+
+    return {
+      stop() {
+        canvas.removeEventListener('mousedown', startDraw);
+        canvas.removeEventListener('mouseup', stopDraw);
+        canvas.removeEventListener('mousemove', draw);
+      }
+    };
+  }
+
+  // === Starfield ===
+  function Starfield() {
+    const starCount = 300;
+    const stars = [];
+    let animationId;
+
+    for (let i = 0; i < starCount; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        z: Math.random() * canvas.width
+      });
+    }
+
+    function drawStars() {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        s.z -= 2;
+        if (s.z < 1) {
+          s.x = Math.random() * canvas.width;
+          s.y = Math.random() * canvas.height;
+          s.z = canvas.width;
+        }
+        const k = 500 / s.z;
+        const x = (s.x - canvas.width / 2) * k + canvas.width / 2;
+        const y = (s.y - canvas.height / 2) * k + canvas.height / 2;
+        const size = 2 * k;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(x, y, size, size);
+      });
+      hud.textContent = `Stars: ${starCount}`;
+    }
+
+    function loop() {
+      drawStars();
+      animationId = requestAnimationFrame(loop);
+    }
+
+    loop();
+
+    return {
+      stop() {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }
+
+  // === Color Flow ===
+  function ColorFlow() {
+    let hue = 0;
+    let animationId;
+
+    function drawFlow() {
+      ctx.fillStyle = `hsla(${hue}, 100%, 50%, 0.1)`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      hue = (hue + 1) % 360;
+      hud.textContent = `Hue: ${hue}`;
+    }
+
+    function loop() {
+      drawFlow();
+      animationId = requestAnimationFrame(loop);
+    }
+
+    loop();
+
+    return {
+      stop() {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }
   </script>
 </body>
 </html>
