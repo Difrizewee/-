@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Внутренний сайт агентства «Смысл»</title>
+  <style>
+    :root {
+      --background: #f5f5f5;
+      --text-color: #1a1a2e;
+      --accent: #e43f5a;
+      --card: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --font: 'Inter', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--background);
+      color: var(--text-color);
+      overflow-x: hidden;
+    }
+    header {
+      background: var(--text-color);
+      color: var(--background);
+      padding: 1rem 2rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    nav a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color .3s;
+    }
+    nav a:hover { color: var(--background); }
+    main { padding: 2rem; }
+    section { margin-bottom: 4rem; }
+    section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+    }
+    section h2::after {
+      content: '';
+      display: block;
+      width: 50px;
+      height: 4px;
+      background: var(--accent);
+      margin-top: 0.3rem;
+      border-radius: 2px;
+    }
+    .game-container {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      padding: 2rem;
+      min-height: 300px;
+      position: relative;
+    }
+    /* Memory Game */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    .card {
+      background: var(--accent);
+      color: var(--background);
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 80px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: transform .3s;
+    }
+    .card.flipped { transform: rotateY(180deg); background: var(--card); color: var(--text-color); }
+    /* SEO Puzzle */
+    .puzzle-container { display: flex; gap: 2rem; }
+    .terms, .defs { flex: 1; display: flex; flex-wrap: wrap; gap: 1rem; }
+    .item { background: var(--card); padding: .8rem 1rem; border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); cursor: grab; }
+    /* Timeline */
+    .timeline-list { list-style: none; padding: 0; }
+    .timeline-list li { background: var(--card); margin-bottom: .8rem; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); cursor: move; }
+    /* Campaign Builder */
+    .builder { display: flex; gap: 2rem; }
+    .steps, .dropzone { flex: 1; background: var(--card); padding: 1rem; border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); min-height: 200px; }
+    .steps .step { margin: .5rem 0; padding: .6rem; border: 1px dashed var(--accent); border-radius: 4px; cursor: grab; }
+    .dropzone.highlight { border-color: var(--text-color); }
+    /* Design Quiz */
+    .quiz-question { margin-bottom: 1rem; font-size: 1.1rem; }
+    .quiz-options { list-style: none; padding: 0; }
+    .quiz-options li { background: var(--card); margin-bottom: .8rem; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 6px var(--shadow); cursor: pointer; transition: background .3s; }
+    .quiz-options li.correct { background: #d4edda; }
+    .quiz-options li.wrong { background: #f8d7da; }
+    /* Animations */
+    [data-animate] { opacity: 0; transform: translateY(20px); animation: fadeInUp .6s forwards; }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 data-animate>Агентство «Смысл» — Игровая площадка</h1>
+    <nav data-animate>
+      <ul>
+        <li><a href="#memory">Логотип Мемо</a></li>
+        <li><a href="#seo">SEO-Пазл</a></li>
+        <li><a href="#timeline">Временная Линия</a></li>
+        <li><a href="#campaign">Сбор Кампаний</a></li>
+        <li><a href="#quiz">Дизайн-Квиз</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <!-- Memory Game -->
+    <section id="memory" data-animate>
+      <h2>1. Логотип Мемо</h2>
+      <div class="game-container">
+        <div class="memory-grid" id="memoryGrid"></div>
+      </div>
+    </section>
+    <!-- SEO Puzzle -->
+    <section id="seo" data-animate>
+      <h2>2. SEO-Пазл</h2>
+      <div class="game-container puzzle-container">
+        <div class="terms" id="termsContainer"></div>
+        <div class="defs" id="defsContainer"></div>
+      </div>
+    </section>
+    <!-- Timeline -->
+    <section id="timeline" data-animate>
+      <h2>3. Временная Линия</h2>
+      <div class="game-container">
+        <ul class="timeline-list" id="timelineList"></ul>
+      </div>
+    </section>
+    <!-- Campaign Builder -->
+    <section id="campaign" data-animate>
+      <h2>4. Сбор Кампаний</h2>
+      <div class="game-container builder">
+        <div class="steps" id="stepPool"></div>
+        <div class="dropzone" id="campaignZone">Перетащите шаги сюда в нужном порядке</div>
+      </div>
+    </section>
+    <!-- Design Quiz -->
+    <section id="quiz" data-animate>
+      <h2>5. Дизайн-Квиз</h2>
+      <div class="game-container">
+        <div id="quizContainer"></div>
+      </div>
+    </section>
+  </main>
+  <footer data-animate style="text-align:center; padding:1rem 0;">© 2025 «Смысл»</footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-animate]').forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.2}s`;
+      });
+      initLogoMemory();
+      initSEOPuzzle();
+      initTimeline();
+      initCampaignBuilder();
+      initDesignQuiz();
+    });
+
+    // 1. Memory Game
+    function initLogoMemory() {
+      const items = ['Клиент A','Клиент B','Клиент C','Клиент D'];
+      const cards = [...items, ...items].map(content => ({id: Math.random(), content}));
+      const grid = document.getElementById('memoryGrid');
+      cards.sort(() => 0.5 - Math.random());
+      let first=null, second=null, lock=false;
+      cards.forEach(card => {
+        const el = document.createElement('div'); el.className='card'; el.textContent='?';
+        el.addEventListener('click', () => {
+          if(lock||el===first) return;
+          el.classList.add('flipped'); el.textContent=card.content;
+          if(!first) { first=el; return; }
+          second=el; lock=true;
+          setTimeout(() => {
+            if(first.textContent===second.textContent) {
+              first.style.visibility=second.style.visibility='hidden';
+            } else {
+              first.classList.remove('flipped'); second.classList.remove('flipped');
+              first.textContent=second.textContent='?';
+            }
+            first=second=null; lock=false;
+          }, 1000);
+        });
+        grid.append(el);
+      });
+    }
+
+    // 2. SEO Puzzle
+    function initSEOPuzzle() {
+      const pairs = [
+        {term:'Ключевое слово', def:'Слово или фраза для поиска'},
+        {term:'Метатег', def:'HTML-тег для описания страницы'},
+        {term:'Бэклинк', def:'Входящая ссылка на сайт'}
+      ];
+      const termsC = document.getElementById('termsContainer');
+      const defsC = document.getElementById('defsContainer');
+      pairs.sort(() => 0.5 - Math.random()).forEach(p => {
+        const term = document.createElement('div'); term.className='item'; term.draggable=true; term.textContent=p.term;
+        term.dataset.match = p.term; termsC.append(term);
+        const def = document.createElement('div'); def.className='item'; def.draggable=true; def.textContent=p.def;
+        def.dataset.match = p.term; defsC.append(def);
+      });
+      let dragged;
+      document.querySelectorAll('.item').forEach(item => {
+        item.addEventListener('dragstart', e => { dragged=e.target; });
+        item.addEventListener('dragover', e => e.preventDefault());
+        item.addEventListener('drop', e => {
+          if(e.target.dataset.match===dragged.dataset.match && e.target!==dragged) {
+            e.target.classList.add('correct'); dragged.classList.add('correct');
+            e.target.draggable=dragged.draggable=false;
+          }
+        });
+      });
+    }
+
+    // 3. Timeline
+    function initTimeline() {
+      const events = [
+        {year:2018, text:'Основание агентства'},
+        {year:2019, text:'Первый крупный клиент'},
+        {year:2021, text:'Внедрение AI-систем'},
+        {year:2024, text:'Выход на международный рынок'}
+      ];
+      const list = document.getElementById('timelineList');
+      events.sort(() => 0.5 - Math.random()).forEach(evt => {
+        const li = document.createElement('li'); li.draggable=true;
+        li.textContent = `${evt.year} — ${evt.text}`;
+        list.append(li);
+      });
+      let dragEl;
+      list.addEventListener('dragstart', e=> dragEl=e.target);
+      list.addEventListener('dragover', e=> { e.preventDefault(); });
+      list.addEventListener('drop', e=> {
+        if(e.target.tagName==='LI') {
+          list.insertBefore(dragEl, e.target.nextSibling);
+        }
+      });
+    }
+
+    // 4. Campaign Builder
+    function initCampaignBuilder() {
+      const steps = ['Исследование','Стратегия','Креатив','Запуск','Анализ'];
+      const pool = document.getElementById('stepPool');
+      const zone = document.getElementById('campaignZone');
+      steps.forEach(s => {
+        const div = document.createElement('div'); div.className='step'; div.textContent=s; div.draggable=true;
+        pool.append(div);
+      });
+      let dragged;
+      document.querySelectorAll('.step').forEach(st => {
+        st.addEventListener('dragstart', e=> dragged=e.target);
+      });
+      zone.addEventListener('dragover', e=> e.preventDefault());
+      zone.addEventListener('drop', e=> {
+        e.preventDefault(); zone.append(dragged.cloneNode(true));
+      });
+    }
+
+    // 5. Design Quiz
+    function initDesignQuiz() {
+      const container = document.getElementById('quizContainer');
+      const questions = [
+        {q:'Что такое контраст в дизайне?',
+         options:['Разница между элементами','Расположение блоков','Шрифт','Отступы'],
+         answer:0},
+        {q:'Что означает термин «Whitespace»?',
+         options:['Пустое пространство','Белый цвет','Маска','Тень'],
+         answer:0}
+      ];
+      let idx=0;
+      function showQuestion() {
+        container.innerHTML='';
+        const {q,options,answer} = questions[idx];
+        const qEl = document.createElement('div'); qEl.className='quiz-question'; qEl.textContent=q;
+        container.append(qEl);
+        const ul = document.createElement('ul'); ul.className='quiz-options';
+        options.forEach((opt,i)=>{
+          const li = document.createElement('li'); li.textContent=opt;
+          li.addEventListener('click',()=>{
+            if(i===answer) li.classList.add('correct'); else li.classList.add('wrong');
+            setTimeout(()=>{
+              idx=(idx+1)%questions.length; showQuestion();
+            }, 1000);
+          }); ul.append(li);
+        });
+        container.append(ul);
+      }
+      showQuestion();
+    }
+  </script>
+</body>
+</html>
